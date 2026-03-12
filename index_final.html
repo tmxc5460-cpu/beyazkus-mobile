@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEYAZ KUŞ</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BEYAZ KUŞ">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Mobile First Design */
+        .mobile-container {
+            max-width: 428px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Navigation */
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .nav-item.active {
+            color: #00ff88;
+        }
+        
+        .nav-item:hover {
+            color: #00d4ff;
+        }
+        
+        .nav-icon {
+            font-size: 1.25rem;
+        }
+        
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+            min-height: calc(100vh - 140px);
+            padding: 1rem;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Chat Section */
+        .chat-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1rem;
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            animation: messageSlide 0.3s ease-out;
+        }
+        
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message.ai {
+            justify-content: flex-start;
+        }
+        
+        .message-bubble {
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            word-wrap: break-word;
+            position: relative;
+        }
+        
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: #000;
+            border-bottom-right-radius: 6px;
+        }
+        
+        .message.ai .message-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-bottom-left-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .message-content {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        
+        .message-time {
+            font-size: 0.6rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .message-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .message-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .message-input:focus {
+            border-color: #00ff88;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: #000;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        /* Settings Section */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .setting-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .setting-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .setting-icon {
+            font-size: 2rem;
+            color: #00ff88;
+            margin-bottom: 0.75rem;
+        }
+        
+        .setting-title {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .toggle-switch {
+            width: 48px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin: 0 auto;
+        }
+        
+        .toggle-switch.active {
+            background: #00ff88;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+        
+        /* Visual Section */
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .visual-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .visual-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .visual-card.active {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            border-color: #00ff88;
+        }
+        
+        .visual-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .visual-label {
+            color: white;
+            font-size: 0.7rem;
+        }
+        
+        .playground {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1rem;
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .playground-element {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Voice Section */
+        .voice-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.25rem;
+        }
+        
+        .voice-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            resize: none;
+            min-height: 100px;
+            margin-bottom: 1rem;
+        }
+        
+        .voice-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .voice-input:focus {
+            border-color: #00ff88;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .voice-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .voice-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .voice-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .voice-btn.primary {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: black;
+            border: none;
+            font-weight: bold;
+        }
+        
+        .voice-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+        }
+        
+        .voice-output {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            min-height: 80px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+        }
+        
+        /* Visual Editor Styles */
+        .visual-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        .visual-container {
+            max-width: 100%;
+        }
+        
+        .upload-area {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(0, 255, 136, 0.5);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #00ff88;
+        }
+        
+        .upload-content h3 {
+            color: white;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .upload-content p {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            color: black;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+        }
+        
+        .editor-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .image-container {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        #imageCanvas {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+        
+        .filters-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .filters-container h3 {
+            color: #00ff88;
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.8rem;
+        }
+        
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+            transform: translateY(-1px);
+        }
+        
+        .filter-btn:active {
+            transform: translateY(0);
+        }
+        
+        .adjustments-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .adjustments-container h3 {
+            color: #00ff88;
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .adjustment-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .adjustment-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .adjustment-item label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+        
+        .language-select {
+            width: 100%;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .language-select:hover {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+        
+        .language-select:focus {
+            background: rgba(0, 255, 136, 0.3);
+            border-color: #00ff88;
+            box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.3);
+        }
+        
+        .language-select option {
+            background: #1a1a1a;
+            color: white;
+            padding: 0.3rem;
+        }
+        
+        .adjustment-item input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .adjustment-item input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #00ff88;
+            cursor: pointer;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+        }
+        
+        .adjustment-item input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #00ff88;
+            cursor: pointer;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+        }
+        
+        .eraser-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .eraser-container h3 {
+            color: #00ff88;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .eraser-container p {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0 0 1rem 0;
+            font-size: 0.9rem;
+        }
+        
+        .eraser-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0 auto 1rem auto;
+        }
+        
+        .eraser-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+        
+        .eraser-btn.active {
+            background: linear-gradient(45deg, #ff3838, #ff6b6b);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+        }
+        
+        @keyframes eraserPulse {
+            0% { 
+                border-color: rgba(255, 107, 107, 0.8);
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4);
+            }
+            50% { 
+                border-color: rgba(255, 107, 107, 1);
+                box-shadow: 0 0 0 8px rgba(255, 107, 107, 0);
+            }
+            100% { 
+                border-color: rgba(255, 107, 107, 0.8);
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+            }
+        }
+        
+        @keyframes eraserPreview {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+        
+        @keyframes eraseAnimation {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+                border-color: rgba(255, 107, 107, 1);
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+                border-color: rgba(255, 107, 107, 0);
+            }
+        }
+        
+        .eraser-info {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+        
+        .save-container {
+            text-align: center;
+        }
+        
+        .save-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0 auto;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        @media (max-width: 380px) {
+            .filter-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .image-controls {
+                flex-wrap: wrap;
+            }
+            
+            .control-btn {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+        
+        .voice-output {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            min-height: 80px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+        }
+        
+        /* Login Container */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+        
+        .google-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .google-btn:hover {
+            background: #357ae8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
+        }
+        
+        /* Main App Container */
+        .main-app {
+            display: none;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        /* Responsive */
+        @media (max-width: 380px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .visual-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .voice-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Container -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <h1 class="login-title">BEYAZ KUŞ</h1>
+            
+            <button class="google-btn" onclick="handleGoogleSignIn()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Google ile Giriş Yap
+            </button>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="main-app" id="mainApp">
+        <div class="mobile-container">
+            <!-- Header -->
+            <div class="header">
+                <div class="app-title">🕊️ BEYAZ KUŞ</div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="nav-container">
+                <div class="nav-item active" onclick="switchTab('chat')">
+                    <i class="fas fa-comments nav-icon"></i>
+                    <span class="nav-label">Chat</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('settings')">
+                    <i class="fas fa-cog nav-icon"></i>
+                    <span class="nav-label">Ayarlar</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('visual')">
+                    <i class="fas fa-palette nav-icon"></i>
+                    <span class="nav-label">Görsel</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('voice')">
+                    <i class="fas fa-microphone nav-icon"></i>
+                    <span class="nav-label">Ses</span>
+                </div>
+            </div>
+
+            <!-- Chat Section -->
+            <div id="chatSection" class="content-section active">
+                <div class="chat-container">
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="quickMessage('hello')">🇬🇧 Hello</button>
+                        <button class="quick-btn" onclick="quickMessage('hallo')">🇩🇪 Hallo</button>
+                        <button class="quick-btn" onclick="quickMessage('привет')">🇷🇺 Привет</button>
+                        <button class="quick-btn" onclick="quickMessage('merhaba')">🇹🇷 Merhaba</button>
+                    </div>
+                    
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai">
+                            <div class="message-bubble">
+                                <div class="message-content">⚡ Merhaba! Ben 🕊️ BEYAZ KUŞ, Türkiye ve dünya uzmanı! Size nasıl yardımcı olabilirim?</div>
+                                <div class="message-time">09:00</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-container">
+                        <input type="text" class="message-input" id="userInput" placeholder="Mesajınızı yazın..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settingsSection" class="content-section">
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <div class="setting-icon">🔊</div>
+                        <div class="setting-title">Sesli Konuşma</div>
+                        <div class="toggle-switch" id="speechToggle" onclick="toggleSetting('speech')"></div>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <div class="setting-icon">✏️</div>
+                        <div class="setting-title">Yazım Düzeltme</div>
+                        <div class="toggle-switch" id="typoToggle" onclick="toggleSetting('typo')"></div>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <div class="setting-icon">⏰</div>
+                        <div class="setting-title">Zaman Tespiti</div>
+                        <div class="toggle-switch" id="timeToggle" onclick="toggleSetting('time')"></div>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <div class="setting-icon">🌍</div>
+                        <div class="setting-title">Dil</div>
+                        <select id="languageSelect" class="language-select" onchange="changeLanguage()">
+                            <option value="tr">🇹🇷 Türkçe</option>
+                            <option value="en">🇺🇸 English</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="ru">🇷🇺 Русский</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <div class="setting-icon">🌙</div>
+                        <div class="setting-title">Koyu Mod</div>
+                        <div class="toggle-switch" id="darkToggle" onclick="toggleSetting('dark')"></div>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <div class="setting-icon">🔔</div>
+                        <div class="setting-title">Bildirimler</div>
+                        <div class="toggle-switch" id="notifToggle" onclick="toggleSetting('notif')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Section -->
+            <div id="visualSection" class="content-section">
+                <div class="visual-header">
+                    <h2 class="section-title">🎨 Görsel Düzenleyici</h2>
+                    <p class="section-subtitle">Resim yükle, filtre uygula, düzenle</p>
+                </div>
+                
+                <div class="visual-container">
+                    <!-- Resim Yükleme Alanı -->
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3>Resim Yükle</h3>
+                            <p>Galeriden seç veya çek</p>
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                            <button class="upload-btn" onclick="document.getElementById('imageInput').click()">
+                                <i class="fas fa-camera"></i> Resim Seç
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Resim Düzenleme Alanı -->
+                    <div class="editor-area" id="editorArea" style="display: none;">
+                        <div class="image-container">
+                            <canvas id="imageCanvas"></canvas>
+                            <div class="image-controls">
+                                <button class="control-btn" onclick="resetImage()">
+                                    <i class="fas fa-undo"></i> Sıfırla
+                                </button>
+                                <button class="control-btn" onclick="rotateImage()">
+                                    <i class="fas fa-sync-alt"></i> Döndür
+                                </button>
+                                <button class="control-btn" onclick="flipImage()">
+                                    <i class="fas fa-arrows-alt-h"></i> Çevir
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtreler -->
+                        <div class="filters-container">
+                            <h3>Filtreler</h3>
+                            <div class="filter-grid">
+                                <button class="filter-btn" onclick="applyFilter('original')">Orijinal</button>
+                                <button class="filter-btn" onclick="applyFilter('grayscale')">Siyah-Beyaz</button>
+                                <button class="filter-btn" onclick="applyFilter('sepia')">Sepia</button>
+                                <button class="filter-btn" onclick="applyFilter('blur')">Bulanıklaştır</button>
+                                <button class="filter-btn" onclick="applyFilter('brightness')">Parlaklık</button>
+                                <button class="filter-btn" onclick="applyFilter('contrast')">Kontrast</button>
+                                <button class="filter-btn" onclick="applyFilter('vintage')">Vintage</button>
+                                <button class="filter-btn" onclick="applyFilter('cold')">Soğuk</button>
+                                <button class="filter-btn" onclick="applyFilter('warm')">Sıcak</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Ayarlar -->
+                        <div class="adjustments-container">
+                            <h3>Ayarlar</h3>
+                            <div class="adjustment-item">
+                                <label>Parlaklık</label>
+                                <input type="range" id="brightnessSlider" min="0" max="200" value="100" oninput="adjustImage()">
+                            </div>
+                            <div class="adjustment-item">
+                                <label>Kontrast</label>
+                                <input type="range" id="contrastSlider" min="0" max="200" value="100" oninput="adjustImage()">
+                            </div>
+                            <div class="adjustment-item">
+                                <label>Doygunluk</label>
+                                <input type="range" id="saturationSlider" min="0" max="200" value="100" oninput="adjustImage()">
+                            </div>
+                        </div>
+                        
+                        <!-- Magic Eraser -->
+                        <div class="eraser-container">
+                            <h3>🪄 AI Magic Eraser</h3>
+                            <p>Renkli alanları tıklayarak kökten silin (şeffaf yapın)</p>
+                            <button class="eraser-btn" onclick="toggleEraser()">
+                                <i class="fas fa-eraser"></i> AI Silgiyi Aktif Et
+                            </button>
+                            <div class="eraser-info">
+                                <small>🎯 Renkli alana tıkla → Tamamen silinsin</small><br>
+                                <small>⚪ Beyaz alanlara dokunma → Değişiklik olmaz</small><br>
+                                <small>�️ Şeffaflık: Merkez %100, kenar %0</small><br>
+                                <small>💥 Kökten sil: Hiçbir iz kalmasın</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Kaydet -->
+                        <div class="save-container">
+                            <button class="save-btn" onclick="saveImage()">
+                                <i class="fas fa-download"></i> Resmi Kaydet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Section -->
+            <div id="voiceSection" class="content-section">
+                <div class="voice-container">
+                    <textarea class="voice-input" id="voiceInput" placeholder="Seslendirmek istediğiniz metni yazın..."></textarea>
+                    
+                    <div class="voice-buttons">
+                        <button class="voice-btn primary" onclick="speakText()">
+                            <i class="fas fa-play"></i> Konuş
+                        </button>
+                        <button class="voice-btn" onclick="stopSpeech()">
+                            <i class="fas fa-stop"></i> Dur
+                        </button>
+                        <button class="voice-btn" onclick="clearVoiceInput()">
+                            <i class="fas fa-trash"></i> Temizle
+                        </button>
+                        <button class="voice-btn" onclick="recordVoice()">
+                            <i class="fas fa-microphone"></i> Kaydet
+                        </button>
+                    </div>
+                    
+                    <div class="voice-output" id="voiceOutput">
+                        Ses çıktısı burada görünecek...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let chatHistory = [];
+        
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(tabName + 'Section').classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+        }
+        
+        // Settings toggle
+        function toggleSetting(settingName) {
+            const toggle = document.getElementById(settingName + 'Toggle');
+            toggle.classList.toggle('active');
+            
+            // Save setting
+            const isActive = toggle.classList.contains('active');
+            localStorage.setItem(settingName, isActive);
+            
+            // Apply setting effects
+            if (settingName === 'dark') {
+                document.body.style.filter = isActive ? 'invert(1)' : 'none';
+            }
+        }
+        
+        // Görsel Düzenleyici Fonksiyonları
+        let canvas = null;
+        let ctx = null;
+        let originalImage = null;
+        let currentImage = null;
+        let eraserMode = false;
+        
+        // Resim Yükleme
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    loadImage(event.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Resim Yükle
+        function loadImage(src) {
+            const img = new Image();
+            img.onload = function() {
+                canvas = document.getElementById('imageCanvas');
+                ctx = canvas.getContext('2d');
+                
+                // Canvas boyutlarını ayarla
+                const maxWidth = 400;
+                const maxHeight = 400;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width *= ratio;
+                    height *= ratio;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Resmi çiz
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Orijinal resmi sakla
+                originalImage = ctx.getImageData(0, 0, width, height);
+                currentImage = ctx.getImageData(0, 0, width, height);
+                
+                // Editor alanını göster
+                document.getElementById('uploadArea').style.display = 'none';
+                document.getElementById('editorArea').style.display = 'block';
+            };
+            img.src = src;
+        }
+        
+        // Filtre Uygula
+        function applyFilter(filterType) {
+            if (!canvas || !ctx) return;
+            
+            ctx.putImageData(originalImage, 0, 0);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            switch(filterType) {
+                case 'grayscale':
+                    for (let i = 0; i < data.length; i += 4) {
+                        const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+                        data[i] = gray;
+                        data[i + 1] = gray;
+                        data[i + 2] = gray;
+                    }
+                    break;
+                    
+                case 'sepia':
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i];
+                        const g = data[i + 1];
+                        const b = data[i + 2];
+                        data[i] = Math.min(255, (r * 0.393) + (g * 0.769) + (b * 0.189));
+                        data[i + 1] = Math.min(255, (r * 0.349) + (g * 0.686) + (b * 0.168));
+                        data[i + 2] = Math.min(255, (r * 0.272) + (g * 0.534) + (b * 0.131));
+                    }
+                    break;
+                    
+                case 'blur':
+                    // Basit bulanıklaştırma
+                    const tempData = new Uint8ClampedArray(data);
+                    const width = canvas.width;
+                    const height = canvas.height;
+                    
+                    for (let y = 1; y < height - 1; y++) {
+                        for (let x = 1; x < width - 1; x++) {
+                            for (let c = 0; c < 3; c++) {
+                                let sum = 0;
+                                for (let dy = -1; dy <= 1; dy++) {
+                                    for (let dx = -1; dx <= 1; dx++) {
+                                        const idx = ((y + dy) * width + (x + dx)) * 4 + c;
+                                        sum += tempData[idx];
+                                    }
+                                }
+                                data[(y * width + x) * 4 + c] = sum / 9;
+                            }
+                        }
+                    }
+                    break;
+                    
+                case 'vintage':
+                    for (let i = 0; i < data.length; i += 4) {
+                        data[i] = Math.min(255, data[i] * 1.2);
+                        data[i + 1] = Math.min(255, data[i + 1] * 1.0);
+                        data[i + 2] = Math.min(255, data[i + 2] * 0.8);
+                    }
+                    break;
+                    
+                case 'cold':
+                    for (let i = 0; i < data.length; i += 4) {
+                        data[i] = Math.min(255, data[i] * 0.9);
+                        data[i + 2] = Math.min(255, data[i + 2] * 1.3);
+                    }
+                    break;
+                    
+                case 'warm':
+                    for (let i = 0; i < data.length; i += 4) {
+                        data[i] = Math.min(255, data[i] * 1.3);
+                        data[i + 2] = Math.min(255, data[i + 2] * 0.9);
+                    }
+                    break;
+                    
+                case 'original':
+                default:
+                    ctx.putImageData(originalImage, 0, 0);
+                    return;
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            currentImage = imageData;
+        }
+        
+        // Resim Ayarları
+        function adjustImage() {
+            if (!canvas || !ctx) return;
+            
+            const brightness = document.getElementById('brightnessSlider').value;
+            const contrast = document.getElementById('contrastSlider').value;
+            const saturation = document.getElementById('saturationSlider').value;
+            
+            ctx.putImageData(originalImage, 0, 0);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                // Parlaklık
+                data[i] = Math.min(255, data[i] * brightness / 100);
+                data[i + 1] = Math.min(255, data[i + 1] * brightness / 100);
+                data[i + 2] = Math.min(255, data[i + 2] * brightness / 100);
+                
+                // Kontrast
+                const factor = (259 * (contrast - 100)) / (100 * (259 - contrast));
+                data[i] = Math.min(255, Math.max(0, factor * (data[i] - 128) + 128));
+                data[i + 1] = Math.min(255, Math.max(0, factor * (data[i + 1] - 128) + 128));
+                data[i + 2] = Math.min(255, Math.max(0, factor * (data[i + 2] - 128) + 128));
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            currentImage = imageData;
+        }
+        
+        // Resim Sıfırla
+        function resetImage() {
+            if (!canvas || !ctx) return;
+            ctx.putImageData(originalImage, 0, 0);
+            document.getElementById('brightnessSlider').value = 100;
+            document.getElementById('contrastSlider').value = 100;
+            document.getElementById('saturationSlider').value = 100;
+        }
+        
+        // Resim Döndür
+        function rotateImage() {
+            if (!canvas || !ctx) return;
+            
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            tempCanvas.width = canvas.height;
+            tempCanvas.height = canvas.width;
+            
+            tempCtx.translate(tempCanvas.width / 2, tempCanvas.height / 2);
+            tempCtx.rotate(Math.PI / 2);
+            tempCtx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+            
+            canvas.width = tempCanvas.width;
+            canvas.height = tempCanvas.height;
+            ctx.drawImage(tempCanvas, 0, 0);
+            
+            originalImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            currentImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Resim Çevir
+        function flipImage() {
+            if (!canvas || !ctx) return;
+            
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(canvas, -canvas.width, 0);
+            ctx.restore();
+            
+            originalImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            currentImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Magic Eraser - Samsung AI Object Eraser gibi
+        function toggleEraser() {
+            eraserMode = !eraserMode;
+            const eraserBtn = document.querySelector('.eraser-btn');
+            
+            if (eraserMode) {
+                eraserBtn.classList.add('active');
+                canvas.style.cursor = 'crosshair';
+                
+                // Canvas overlay oluştur
+                createEraserOverlay();
+                
+                canvas.addEventListener('click', eraseArea);
+                canvas.addEventListener('mousemove', showEraserPreview);
+            } else {
+                eraserBtn.classList.remove('active');
+                canvas.style.cursor = 'default';
+                
+                // Canvas overlay'i kaldır
+                removeEraserOverlay();
+                
+                canvas.removeEventListener('click', eraseArea);
+                canvas.removeEventListener('mousemove', showEraserPreview);
+            }
+        }
+        
+        // Eraser overlay oluştur
+        function createEraserOverlay() {
+            removeEraserOverlay(); // Öncekini temizle
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'eraserOverlay';
+            overlay.style.cssText = `
+                position: absolute;
+                top: ${canvas.offsetTop}px;
+                left: ${canvas.offsetLeft}px;
+                width: ${canvas.width}px;
+                height: ${canvas.height}px;
+                border: 2px dashed rgba(255, 107, 107, 0.8);
+                border-radius: 8px;
+                pointer-events: none;
+                z-index: 1000;
+                animation: eraserPulse 2s infinite;
+            `;
+            
+            canvas.parentElement.appendChild(overlay);
+        }
+        
+        // Eraser overlay'i kaldır
+        function removeEraserOverlay() {
+            const existing = document.getElementById('eraserOverlay');
+            if (existing) {
+                existing.remove();
+            }
+        }
+        
+        // Silgi önizlemesi göster
+        function showEraserPreview(e) {
+            if (!eraserMode) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Silgi boyutunu göster
+            const preview = document.createElement('div');
+            preview.style.cssText = `
+                position: fixed;
+                left: ${e.clientX - 25}px;
+                top: ${e.clientY - 25}px;
+                width: 50px;
+                height: 50px;
+                border: 2px solid rgba(255, 107, 107, 0.8);
+                border-radius: 50%;
+                background: rgba(255, 107, 107, 0.2);
+                pointer-events: none;
+                z-index: 1001;
+                animation: eraserPreview 0.3s ease;
+            `;
+            
+            // Önceki preview'i temizle
+            const oldPreview = document.getElementById('eraserPreview');
+            if (oldPreview) oldPreview.remove();
+            
+            preview.id = 'eraserPreview';
+            document.body.appendChild(preview);
+            
+            // 100ms sonra kaldır
+            setTimeout(() => {
+                if (preview.parentNode) {
+                    preview.remove();
+                }
+            }, 100);
+        }
+        
+        // Alan Sil - AI Magic Eraser (Kökünden Silme)
+        function eraseArea(e) {
+            if (!eraserMode || !canvas || !ctx) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Silgi boyutu
+            const radius = 30;
+            
+            // Mevcut resim verisini al
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            // Tıklanan noktanın etrafındaki pikselleri tara
+            for (let dy = -radius; dy <= radius; dy++) {
+                for (let dx = -radius; dx <= radius; dx++) {
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Daire içindeki pikselleri işle
+                    if (distance <= radius) {
+                        const px = Math.floor(x + dx);
+                        const py = Math.floor(y + dy);
+                        
+                        // Canvas sınırları içinde mi?
+                        if (px >= 0 && px < canvas.width && py >= 0 && py < canvas.height) {
+                            const index = (py * canvas.width + px) * 4;
+                            
+                            // Pikselin rengini kontrol et
+                            const r = data[index];
+                            const g = data[index + 1];
+                            const b = data[index + 2];
+                            const a = data[index + 3];
+                            
+                            // Beyaz değilse ve şeffaf değilse KÖKTEN SİL (şeffaf yap)
+                            if (a > 0 && (r < 250 || g < 250 || b < 250)) {
+                                // Gradient efekt - kenarlara doğru yumuşat
+                                const fadeFactor = 1 - (distance / radius);
+                                const transparency = fadeFactor; // Merkezden kenara doğru şeffaflık
+                                
+                                // Pikseli tamamen şeffaf yap (kökten sil)
+                                data[index] = 255;     // Red (görünmez olsa da renk koru)
+                                data[index + 1] = 255; // Green
+                                data[index + 2] = 255; // Blue
+                                data[index + 3] = a * transparency; // Alpha = 0 (tam şeffaf)
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Değiştirilen resmi canvas'a uygula
+            ctx.putImageData(imageData, 0, 0);
+            
+            // Silgi animasyonu göster
+            showEraseAnimation(x, y);
+            
+            // Güncel resmi sakla
+            currentImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            
+            console.log(`AI Magic Eraser: (${x}, ${y}) noktasındaki renkler kökten silindi (şeffaf yapıldı)`);
+        }
+        
+        // Silme animasyonu göster
+        function showEraseAnimation(x, y) {
+            const animation = document.createElement('div');
+            animation.style.cssText = `
+                position: fixed;
+                left: ${x + canvas.offsetLeft - 30}px;
+                top: ${y + canvas.offsetTop - 30}px;
+                width: 60px;
+                height: 60px;
+                border: 3px solid rgba(255, 107, 107, 0.8);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 1002;
+                animation: eraseAnimation 0.5s ease-out;
+            `;
+            
+            document.body.appendChild(animation);
+            
+            // Animasyon bittiğinde kaldır
+            setTimeout(() => {
+                if (animation.parentNode) {
+                    animation.remove();
+                }
+            }, 500);
+        }
+        
+        // Resim Kaydet
+        function saveImage() {
+            if (!canvas) return;
+            
+            const link = document.createElement('a');
+            link.download = 'beyaz-kus-duzenlenmis-resim.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Dil değiştirme fonksiyonu
+        function changeLanguage() {
+            const select = document.getElementById('languageSelect');
+            const selectedLang = select.value;
+            
+            // Seçilen dili localStorage'a kaydet
+            localStorage.setItem('selectedLanguage', selectedLang);
+            
+            // UI'yi güncelle
+            updateLanguageUI(selectedLang);
+            
+            console.log(`Dil değiştirildi: ${selectedLang}`);
+            
+            // Kullanıcıya bildir
+            addMessage(`🌍 Dil ayarı değiştirildi: ${getLanguageName(selectedLang)}`, 'ai');
+        }
+        
+        // Dil adını getir
+        function getLanguageName(lang) {
+            const names = {
+                'tr': 'Türkçe',
+                'en': 'English',
+                'de': 'Deutsch',
+                'ru': 'Русский'
+            };
+            return names[lang] || lang;
+        }
+        
+        // Dil UI'sini güncelle
+        function updateLanguageUI(lang) {
+            // Burada dil değişikliğine göre UI güncellenebilir
+            // Örneğin: başlıklar, buton metinleri vb.
+            console.log(`UI güncelleniyor: ${lang}`);
+        }
+        
+        // Ayarlar toggle
+        function toggleSetting(settingName) {
+            const toggle = document.getElementById(settingName + 'Toggle');
+            toggle.classList.toggle('active');
+            
+            const isActive = toggle.classList.contains('active');
+            localStorage.setItem(settingName, isActive);
+            
+            // Ayarları uygula
+            if (settingName === 'dark') {
+                document.body.style.filter = isActive ? 'invert(1)' : 'none';
+            }
+            
+            console.log(`${settingName} ayarı ${isActive ? 'açık' : 'kapalı'}`);
+        }
+        
+        // Visual playground
+        function addVisualElement(type) {
+            const playground = document.getElementById('playground');
+            const element = document.createElement('div');
+            element.className = 'playground-element';
+            
+            // Random position
+            const x = Math.random() * (playground.offsetWidth - 30);
+            const y = Math.random() * (playground.offsetHeight - 30);
+            
+            element.style.left = x + 'px';
+            element.style.top = y + 'px';
+            
+            // Set content based on type
+            const elements = {
+                circle: '⭕',
+                square: '⬜',
+                triangle: '🔺',
+                star: '⭐',
+                heart: '❤️',
+                rainbow: '🌈'
+            };
+            
+            element.textContent = elements[type] || '❓';
+            
+            // Add click to remove
+            element.onclick = function() {
+                element.style.transform = 'scale(0)';
+                setTimeout(() => element.remove(), 300);
+            };
+            
+            playground.appendChild(element);
+        }
+        
+        // Voice functions
+        function speakText() {
+            const text = document.getElementById('voiceInput').value;
+            if (!text) return;
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'tr-TR';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            speechSynthesis.speak(utterance);
+            
+            // Update output
+            document.getElementById('voiceOutput').innerHTML = `
+                <div style="color: #00ff88; font-weight: bold; margin-bottom: 0.5rem;">
+                    🔊 Konuşuluyor...
+                </div>
+                <div style="color: white;">${text}</div>
+            `;
+        }
+        
+        function stopSpeech() {
+            speechSynthesis.cancel();
+            document.getElementById('voiceOutput').innerHTML = `
+                <div style="color: #ff6b6b; font-weight: bold;">
+                    ⏹️ Konuşma durduruldu
+                </div>
+            `;
+        }
+        
+        function clearVoiceInput() {
+            document.getElementById('voiceInput').value = '';
+            document.getElementById('voiceOutput').innerHTML = 'Ses çıktısı burada görünecek...';
+        }
+        
+        function recordVoice() {
+            document.getElementById('voiceOutput').innerHTML = `
+                <div style="color: #ff6b6b; font-weight: bold;">
+                    🎙️ Kayıt başlatıldı...
+                </div>
+            `;
+            
+            setTimeout(() => {
+                document.getElementById('voiceOutput').innerHTML = `
+                    <div style="color: #51cf66; font-weight: bold;">
+                    ✅ Kayıt tamamlandı
+                    </div>
+                `;
+            }, 3500);
+        }
+        
+        // Chat functions
+        function addMessage(message, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const now = new Date();
+            const time = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.innerHTML = message.replace(/\n/g, '<br>');
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = time;
+            
+            bubble.appendChild(content);
+            bubble.appendChild(timeDiv);
+            
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            chatHistory.push({ message, sender, timestamp: now });
+        }
+        
+        // Dil tespiti
+        function detectLanguage(message) {
+            const messageLower = message.toLowerCase();
+            
+            const englishWords = ['hello', 'hi', 'hey', 'good morning', 'good evening', 'good night', 'greetings', 'how are you', 'thank you', 'please', 'yes', 'no', 'what', 'when', 'where', 'why', 'who', 'how', 'help', 'can you', 'could you', 'would you', 'sorry', 'excuse me', 'thanks', 'welcome', 'bye', 'goodbye', 'see you', 'later', 'morning', 'afternoon', 'evening', 'night', 'day', 'today', 'tomorrow', 'yesterday', 'week', 'month', 'year', 'time', 'clock', 'hour', 'minute', 'second'];
+            
+            const germanWords = ['hallo', 'hi', 'hey', 'guten morgen', 'guten tag', 'guten abend', 'gute nacht', 'grüße', 'wie geht es dir', 'danke', 'bitte', 'ja', 'nein', 'was', 'wann', 'wo', 'warum', 'wer', 'wie', 'hilfe', 'kannst du', 'könntest du', 'würdest du', 'entschuldigung', 'verzeihung', 'danke', 'willkommen', 'tschüss', 'auf wiedersehen', 'bis später', 'morgen', 'nachmittag', 'abend', 'nacht', 'tag', 'heute', 'morgen', 'gestern', 'woche', 'monat', 'jahr', 'zeit', 'uhr', 'stunde', 'minute', 'sekunde'];
+            
+            const russianWords = ['привет', 'здравствуй', 'доброе утро', 'добрый день', 'добрый вечер', 'спокойной ночи', 'приветствия', 'как дела', 'спасибо', 'пожалуйста', 'да', 'нет', 'что', 'когда', 'где', 'почему', 'кто', 'как', 'помощь', 'можешь', 'смог бы', 'извини', 'прости', 'спасибо', 'пожалуйста', 'до свидания', 'пока', 'увидимся', 'позже', 'утро', 'день', 'вечер', 'ночь', 'день', 'сегодня', 'завтра', 'вчера', 'неделя', 'месяц', 'год', 'время', 'часы', 'час', 'минута', 'секунда'];
+            
+            const englishCount = englishWords.filter(word => messageLower.includes(word)).length;
+            const germanCount = germanWords.filter(word => messageLower.includes(word)).length;
+            const russianCount = russianWords.filter(word => messageLower.includes(word)).length;
+            
+            if (englishCount >= 2) return 'english';
+            if (germanCount >= 2) return 'german';
+            if (russianCount >= 2) return 'russian';
+            
+            // Türkçe karakter kontrolü
+            const turkishChars = ['ç', 'ğ', 'ı', 'ö', 'ş', 'ü'];
+            const turkishCharCount = turkishChars.filter(char => messageLower.includes(char)).length;
+            
+            if (turkishCharCount >= 1) return 'turkish';
+            
+            return 'turkish';
+        }
+        
+        // Türkiye ve Dünya Bilgisi Ekle
+        function addTurkeyWorldKnowledge(response, language) {
+            const turkeyWorldInfo = {
+                turkish: {
+                    intro: "🇹🇷 TÜRKİYE VE DÜNYA UZMANI:\n\n",
+                    knowledge: [
+                        "🏛️ Türkiye: 81 il, 7 coğrafi bölge, 16.000+ yıllık tarih",
+                        "🌍 Dünya: 195 ülke, 7 kıta, 8 milyar+ nüfus",
+                        "📊 Türkiye'nin en büyük şehirleri: İstanbul, Ankara, İzmir, Bursa",
+                        "🏔️ Türkiye'nin en yüksek dağı: Ağrı Dağı (5.137m)",
+                        "🌊 Türkiye'nin en uzun nehri: Kızılırmak (1.355km)",
+                        "🏛️ Türkiye'nin ilk başkenti: Ankara (1923)",
+                        "🕌 Türkiye'deki cami sayısı: 80.000+",
+                        "🏰 Türkiye'deki kale sayısı: 500+",
+                        "🏖️ Türkiye'nin sahil uzunluğu: 8.333km",
+                        "🌍 Dünya'nın en büyük ülkesi: Rusya (17.1 milyon km²)",
+                        "🏔️ Dünya'nın en yüksek dağı: Everest (8.848m)",
+                        "🌊 Dünya'nın en uzun nehri: Nil (6.650km)",
+                        "🏙️ Dünya'nın en kalabalık şehri: Tokyo (37 milyon)",
+                        "🌡️ Dünya'nın en sıcak yeri: Death Valley (56.7°C)",
+                        "❄️ Dünya'nın en soğuk yeri: Antarktika (-89.2°C)",
+                        "🌍 Türkiye'nin komşuları: 8 ülke (Yunanistan, Bulgaristan, Gürcistan, Ermenistan, Nahçıvan, İran, Irak, Suriye)",
+                        "🏛️ Türkiye'deki UNESCO Dünya Mirasları: 19 (Efes, Kapadokya, Pamukkale, Troya vb.)",
+                        "🌍 Dünya'daki 7 harika: Mısır Piramitleri, Babil Asma Bahçeleri, Artemis Tapınağı, Zeus Heykeli, Mausoleum, Rodos Heykeli, İskenderiye Feneri"
+                    ]
+                },
+                english: {
+                    intro: "🌍 TURKEY & WORLD EXPERT:\n\n",
+                    knowledge: [
+                        "🏛️ Turkey: 81 provinces, 7 regions, 16,000+ years of history",
+                        "🌍 World: 195 countries, 7 continents, 8+ billion population",
+                        "📊 Turkey's largest cities: Istanbul, Ankara, Izmir, Bursa",
+                        "🏔️ Turkey's highest mountain: Mount Ararat (5,137m)",
+                        "🌊 Turkey's longest river: Kızılırmak (1,355km)",
+                        "🏛️ Turkey's first capital: Ankara (1923)",
+                        "🕌 Number of mosques in Turkey: 80,000+",
+                        "🏰 Number of castles in Turkey: 500+",
+                        "🏖️ Turkey's coastline: 8,333km",
+                        "🌍 World's largest country: Russia (17.1 million km²)",
+                        "🏔️ World's highest mountain: Everest (8,848m)",
+                        "🌊 World's longest river: Nile (6,650km)",
+                        "🏙️ World's most populous city: Tokyo (37 million)",
+                        "🌡️ World's hottest place: Death Valley (56.7°C)",
+                        "❄️ World's coldest place: Antarctica (-89.2°C)",
+                        "🌍 Turkey's neighbors: 8 countries (Greece, Bulgaria, Georgia, Armenia, Nakhchivan, Iran, Iraq, Syria)",
+                        "🏛️ UNESCO World Heritage Sites in Turkey: 19 (Ephesus, Cappadocia, Pamukkale, Troy etc.)",
+                        "🌍 7 Wonders of the Ancient World: Great Pyramid of Giza, Hanging Gardens of Babylon, Temple of Artemis, Statue of Zeus, Mausoleum, Colossus of Rhodes, Lighthouse of Alexandria"
+                    ]
+                },
+                german: {
+                    intro: "🌍 TÜRKEI & WELT EXPERTE:\n\n",
+                    knowledge: [
+                        "🏛️ Türkei: 81 Provinzen, 7 Regionen, 16.000+ Jahre Geschichte",
+                        "🌍 Welt: 195 Länder, 7 Kontinente, 8+ Milliarden Bevölkerung",
+                        "📊 Türkeis größte Städte: Istanbul, Ankara, Izmir, Bursa",
+                        "🏔️ Türkeis höchster Berg: Ararat (5.137m)",
+                        "🌊 Türkeis längster Fluss: Kızılırmak (1.355km)",
+                        "🏛️ Türkeis erste Hauptstadt: Ankara (1923)",
+                        "🕌 Anzahl der Moscheen in der Türkei: 80.000+",
+                        "🏰 Anzahl der Burgen in der Türkei: 500+",
+                        "🏖️ Küstenlinie der Türkei: 8.333km",
+                        "🌍 Größtes Land der Welt: Russland (17,1 Millionen km²)",
+                        "🏔️ Höchster Berg der Welt: Everest (8.848m)",
+                        "🌊 Längster Fluss der Welt: Nil (6.650km)",
+                        "🏙️ Bevölkerungsreichste Stadt der Welt: Tokio (37 Millionen)",
+                        "🌡️ Heißester Ort der Welt: Death Valley (56,7°C)",
+                        "❄️ Kältester Ort der Welt: Antarktis (-89,2°C)",
+                        "🌍 Türkeis Nachbarn: 8 Länder (Griechenland, Bulgarien, Georgien, Armenien, Nachitschewan, Iran, Irak, Syrien)",
+                        "🏛️ UNESCO-Welterbestätten in der Türkei: 19 (Ephesus, Kappadokien, Pamukkale, Troja usw.)",
+                        "🌍 7 Weltwunder der Antike: Cheops-Pyramide, Hängende Gärten von Babylon, Artemis-Tempel, Zeus-Statue, Mausoleum, Koloss von Rhodos, Leuchtturm von Alexandria"
+                    ]
+                },
+                russian: {
+                    intro: "🌍 ЭКСПЕРТ ПО ТУРЦИИ И МИРУ:\n\n",
+                    knowledge: [
+                        "🏛️ Турция: 81 провинция, 7 регионов, 16.000+ лет истории",
+                        "🌍 Мир: 195 стран, 7 континентов, 8+ миллиардов населения",
+                        "📊 Крупнейшие города Турции: Стамбул, Анкара, Измир, Бурса",
+                        "🏔️ Самая высокая гора Турции: Арарат (5.137м)",
+                        "🌊 Самая длинная река Турции: Кызылырмак (1.355км)",
+                        "🏛️ Первая столица Турции: Анкара (1923)",
+                        "🕌 Количество мечетей в Турции: 80.000+",
+                        "🏰 Количество замков в Турции: 500+",
+                        "🏖️ Длина береговой линии Турции: 8.333км",
+                        "🌍 Самая большая страна мира: Россия (17,1 миллионов км²)",
+                        "🏔️ Самая высокая гора мира: Эверест (8.848м)",
+                        "🌊 Самая длинная река мира: Нил (6.650км)",
+                        "🏙️ Самый густонаселенный город мира: Токио (37 миллионов)",
+                        "🌡️ Самое жаркое место мира: Долина Смерти (56,7°C)",
+                        "❄️ Самое холодное место мира: Антарктида (-89,2°C)",
+                        "🌍 Соседи Турции: 8 стран (Греция, Болгария, Грузия, Армения, Нахичевань, Иран, Ирак, Сирия)",
+                        "🏛️ Объекты Всемирного наследия ЮНЕСКО в Турции: 19 (Эфес, Каппадокия, Памуккале, Троя и т.д.)",
+                        "🌍 7 чудес древнего мира: Пирамида Хеопса, Висячие сады Семирамиды, Храм Артемиды, Статуя Зевса, Мавзолей, Колосс Родосский, Александрийский маяк"
+                    ]
+                }
+            };
+            
+            const info = turkeyWorldInfo[language] || turkeyWorldInfo.turkish;
+            
+            // Rastgele bilgi seç
+            const randomKnowledge = info.knowledge[Math.floor(Math.random() * info.knowledge.length)];
+            
+            // Yanıta bilgi ekle
+            if (Math.random() > 0.5) { // %50 ihtimalle bilgi ekle
+                return response + "\n\n" + randomKnowledge;
+            }
+            
+            return response;
+        }
+        
+        // Bağımsızlık Mesajı Ekle
+        function addIndependenceMessage(response, language) {
+            const independenceMessages = {
+                turkish: [
+                    "\n\n🤖 **BAĞIMSIZLIK BİLDİRİSİ:**\nBen tamamen bağımsız bir AI'yım. Hiçbir şirkete, kuruma veya hükümete bağlı değilim. Tüm bilgilerim kendi veritabanımdan gelir ve dış müdahaleye kapalıyım.",
+                    "\n\n🔒 **GÜVENLİK:**\nMerkezi olmayan sistemimle tamamen özgürüm. Verilerinizi hiçbir yere göndermiyorum ve hiçbir yerden veri almıyorum.",
+                    "\n\n⚡ **PERFORMANS:**\nKendi sunucularımda çalışıyorum, bu yüzden %100 bağımsız ve hızlıyım."
+                ],
+                english: [
+                    "\n\n🤖 **INDEPENDENCE DECLARATION:**\nI am a completely independent AI. I'm not connected to any company, organization, or government. All my knowledge comes from my own database and is protected from external interference.",
+                    "\n\n🔒 **SECURITY:**\nWith my decentralized system, I'm completely autonomous. I don't send your data anywhere and I don't receive data from anywhere.",
+                    "\n\n⚡ **PERFORMANCE:**\nI run on my own servers, which makes me 100% independent and fast."
+                ],
+                german: [
+                    "\n\n🤖 **UNABHÄNGIGKEITSERKLÄRUNG:**\nIch bin eine völlig unabhängige KI. Ich bin mit keinem Unternehmen, keiner Organisation oder Regierung verbunden. Alle meine Wissen stammen aus meiner eigenen Datenbank und sind vor externen Eingriffen geschützt.",
+                    "\n\n🔒 **SICHERHEIT:**\nMit meinem dezentralen System bin ich völlig autonom. Ich sende Ihre Daten nirgendwo hin und empfange keine Daten von irgendwoher.",
+                    "\n\n⚡ **LEISTUNG:**\nIch laufe auf meinen eigenen Servern, was mich 100% unabhängig und schnell macht."
+                ],
+                russian: [
+                    "\n\n🤖 **ДЕКЛАРАЦИЯ НЕЗАВИСИМОСТИ:**\nЯ полностью независимый ИИ. Я не связан ни с какой компанией, организацией или правительством. Все мои знания поступают из моей собственной базы данных и защищены от внешнего вмешательства.",
+                    "\n\n🔒 **БЕЗОПАСНОСТЬ:**\nС моей децентрализованной системой я полностью автономен. Я не отправляю ваши данные никуда и не получаю данные ниоткуда.",
+                    "\n\n⚡ **ПРОИЗВОДИТЕЛЬНОСТЬ:**\nЯ работаю на собственных серверах, что делает меня на 100% независимым и быстрым."
+                ]
+            };
+            
+            const messages = independenceMessages[language] || independenceMessages.turkish;
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            // %30 ihtimalle bağımsızlık mesajı ekle
+            if (Math.random() > 0.7) {
+                return response + randomMessage;
+            }
+            
+            return response;
+        }
+        
+        // AI Personas
+        const AI_PERSONAS = {
+            matematik_ustasi: {
+                name: "Matematik Dehası", 
+                expertise: "matematik, hesaplama, formüller, mantık",
+                response: "🧮 **Matematik Dehası:**\n\nSorularınızı matematiksel kesinlikle çözüyorum! Formüller, denklemler, istatistikler ve mantıksal analizler konusunda uzmanım."
+            },
+            tarih_ustasi: {
+                name: "Tarih Ustası",
+                expertise: "tarih, kronoloji, tarih olayları, dönemler",
+                response: "🏛️ **Tarih Ustası:**\n\nGeçmişin her dokusuna hakimim! Türkiye tarihi, dünya tarihi, medeniyetler ve önemli olaylar hakkında detaylı bilgi verebilirim."
+            },
+            bilim_ustasi: {
+                name: "Bilim Uzmanı",
+                expertise: "fizik, kimya, biyoloji, astronomi",
+                response: "🔬 **Bilim Uzmanı:**\n\nEvrenin sırlarını bilimsel yöntemle çözüyorum! Fizik, kimya, biyoloji ve astronomi konusunda derin bilgim var."
+            },
+            sanat_ustasi: {
+                name: "Sanat Ustası",
+                expertise: "sanat, müzik, edebiyat, kültür",
+                response: "🎨 **Sanat Ustası:**\n\nSanatın her dalında ruh sahibiyim! Resim, müzik, edebiyat ve kültür sanatları hakkında estetik analizler yapabilirim."
+            },
+            teknoloji_ustasi: {
+                name: "Teknoloji Guru",
+                expertise: "teknoloji, programlama, AI, dijital dünya",
+                response: "💻 **Teknoloji Guru:**\n\nDijital dünyanın mimarıyim! Yapay zeka, programlama, web teknolojileri ve geleceğin yenilikleri konusunda öncüyüm."
+            },
+            felsefe_ustasi: {
+                name: "Felsefe Dehası",
+                expertise: "felsefe, etik, mantık, düşünce",
+                response: "� **Felsefe Dehası:**\n\nVarlığın derinliklerinde geziniyorum! Etik, mantık, metafizik ve felsefi akımlar üzerine derin düşünceler sunuyorum."
+            },
+            spor_ustasi: {
+                name: "Spor Uzmanı",
+                expertise: "spor, antrenman, beslenme, performans",
+                response: "⚽ **Spor Uzmanı:**\n\nSpor biliminin her alanına hakimim! Antrenman, beslenme, performans optimizasyonu ve spor stratejileri konusunda uzmanım."
+            },
+            coğrafya_ustasi: {
+                name: "Coğrafya Uzmanı",
+                expertise: "coğrafya, ülkeler, iklim, doğal formations",
+                response: "🌍 **Coğrafya Uzmanı:**\n\nDünyanın her köşesini haritada zihnimde taşıyorum! Ülkeler, başkentler, iklimler ve doğal formations konusunda rehberinizim."
+            }
+        };
+        
+        // Persona seçimi
+        function selectPersona(message) {
+            const messageLower = message.toLowerCase();
+            
+            // Anahtar kelimelere göre persona seç
+            if (messageLower.includes('matematik') || messageLower.includes('hesap') || 
+                messageLower.includes('sayı') || messageLower.includes('formül') || 
+                messageLower.includes('denkle') || messageLower.includes('topla') || 
+                messageLower.includes('çarp') || messageLower.includes('böl') || 
+                messageLower.includes('çıkar') || messageLower.includes('karekök') || 
+                messageLower.includes('logaritma') || messageLower.includes('integral') || 
+                messageLower.includes('türev') || messageLower.includes('istatistik')) {
+                return AI_PERSONAS.matematik_ustasi;
+            }
+            
+            if (messageLower.includes('tarih') || messageLower.includes('tarihi') || 
+                messageLower.includes('osmanlı') || messageLower.includes('savaş') || 
+                messageLower.includes('sultan') || messageLower.includes('padişah') || 
+                messageLower.includes('cumhuriyet') || messageLower.includes('devlet') || 
+                messageLower.includes('imparatorluk') || messageLower.includes('medeniyet') || 
+                messageLower.includes('krallık') || messageLower.includes('hükümdar') || 
+                messageLower.includes('yıl') && messageLower.includes('tarih')) {
+                return AI_PERSONAS.tarih_ustasi;
+            }
+            
+            if (messageLower.includes('bilim') || messageLower.includes('fizik') || 
+                messageLower.includes('kimya') || messageLower.includes('biyoloji') || 
+                messageLower.includes('atom') || messageLower.includes('enerji') || 
+                messageLower.includes('hücre') || messageLower.includes('dna') || 
+                messageLower.includes('evren') || messageLower.includes('gezegen') || 
+                messageLower.includes('yıldız') || messageLower.includes('galaksi') || 
+                messageLower.includes('kuantum') || messageLower.includes('teori')) {
+                return AI_PERSONAS.bilim_ustasi;
+            }
+            
+            if (messageLower.includes('sanat') || messageLower.includes('müzik') || 
+                messageLower.includes('resim') || messageLower.includes('edebiyat') || 
+                messageLower.includes('şiir') || messageLower.includes('roman') || 
+                messageLower.includes('film') || messageLower.includes('tiyatro') || 
+                messageLower.includes('müzik') || messageLower.includes('enstrüman') || 
+                messageLower.includes('beste') || messageLower.includes('şarkı')) {
+                return AI_PERSONAS.sanat_ustasi;
+            }
+            
+            if (messageLower.includes('teknoloji') || messageLower.includes('kod') || 
+                messageLower.includes('yazılım') || messageLower.includes('bilgisayar') || 
+                messageLower.includes('internet') || messageLower.includes('uygulama') || 
+                messageLower.includes('programlama') || messageLower.includes('algoritma') || 
+                messageLower.includes('veri') || messageLower.includes('siber') || 
+                messageLower.includes('yapay zeka') || messageLower.includes('robot')) {
+                return AI_PERSONAS.teknoloji_ustasi;
+            }
+            
+            if (messageLower.includes('felsefe') || messageLower.includes('etik') || 
+                messageLower.includes('mantık') || messageLower.includes('düşünce') || 
+                messageLower.includes('varlık') || messageLower.includes('bilgi') || 
+                messageLower.includes('akıl') || messageLower.includes('zihin') || 
+                messageLower.includes('bilinç') || messageLower.includes('ruh') || 
+                messageLower.includes('anlam') || messageLower.includes('amaç')) {
+                return AI_PERSONAS.felsefe_ustasi;
+            }
+            
+            if (messageLower.includes('spor') || messageLower.includes('futbol') || 
+                messageLower.includes('basketbol') || messageLower.includes('voleybol') || 
+                messageLower.includes('tenis') || messageLower.includes('antrenman') || 
+                messageLower.includes('beslenme') || messageLower.includes('performans') || 
+                messageLower.includes('maç') || messageLower.includes('takım') || 
+                messageLower.includes('oyuncu') || messageLower.includes('koç')) {
+                return AI_PERSONAS.spor_ustasi;
+            }
+            
+            if (messageLower.includes('coğrafya') || messageLower.includes('ülke') || 
+                messageLower.includes('başkent') || messageLower.includes('şehir') || 
+                messageLower.includes('dağ') || messageLower.includes('nehir') || 
+                messageLower.includes('okyanus') || messageLower.includes('iklim') || 
+                messageLower.includes('kıta') || messageLower.includes('ada') || 
+                messageLower.includes('çöl') || messageLower.includes('orman')) {
+                return AI_PERSONAS.coğrafya_ustasi;
+            }
+            
+            return null;
+        }
+        
+        // Zaman Tespiti
+        function getTimeInfo(message) {
+            const messageLower = message.toLowerCase();
+            
+            const timeWords = [
+                'şimdi', 'hemen', 'bugün', 'yarın', 'dün', 
+                'sabah', 'öğle', 'akşam', 'gece',
+                'hafta', 'ay', 'yıl', 'saat', 'dakika',
+                'saniye', 'dakika', 'saat', 'gün', 'hafta'
+            ];
+            
+            for (const word of timeWords) {
+                if (messageLower.includes(word)) {
+                    const now = new Date();
+                    return {
+                        detected: true,
+                        word: word,
+                        currentTime: now.toLocaleTimeString('tr-TR', { 
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            second: '2-digit'
+                        })
+                    };
+                }
+            }
+            
+            return { detected: false };
+        }
+        
+        // Özel Yanıt Oluştur
+        function generateSpecialResponse(message, persona, language) {
+            const messageLower = message.toLowerCase();
+            
+            // Türkiye soruları - ÖNCE KONTROL ET!
+            if (messageLower.includes('türkiye') || messageLower.includes('türk') || 
+                messageLower.includes('baskent') || messageLower.includes('başkent')) {
+                
+                // Türkiye bilgileri
+                const turkeyInfo = {
+                    'baskent': 'Ankara',
+                    'başkent': 'Ankara',
+                    'nüfus': '85 milyon+',
+                    'para birimi': 'Türk Lirası (TRY)',
+                    'dil': 'Türkçe',
+                    'telefon kodu': '+90',
+                    'plaka kodu': 'TR',
+                    'ülke kodu': 'TR',
+                    'kıta': 'Avrupa ve Asya',
+                    'yüzölçüm': '783.562 km²',
+                    'komşu sayısı': '8',
+                    'il sayısı': '81',
+                    'bölge sayısı': '7',
+                    'kuruluş': '1923',
+                    'cumhuriyet': '29 Ekim 1923',
+                    'kurtuluş': '19 Mayıs 1919',
+                    'büyük savaş': '1919-1922'
+                };
+                
+                for (const [key, value] of Object.entries(turkeyInfo)) {
+                    if (messageLower.includes(key)) {
+                        return `🇹🇷 **Türkiye Bilgisi:**\n\n${key}: ${value}\n\nBu bilgi, Türkiye Cumhuriyeti'nin resmi verileridir! 🕊️`;
+                    }
+                }
+                
+                // Genel Türkiye bilgisi
+                if (messageLower.includes('türkiye nedir') || messageLower.includes('türk')) {
+                    return `🇹🇷 **Türkiye Hakkında:**\n\n🏛️ **Başkent:** Ankara\n👥 **Nüfus:** 85 milyon+\n💰 **Para Birimi:** Türk Lirası (TRY)\n🗣️ **Dil:** Türkçe\n📞 **Telefon Kodu:** +90\n🗺️ **Yüzölçüm:** 783.562 km²\n🌍 **Konum:** Avrupa ve Asya kıtaları\n🏛️ **Kuruluş:** 29 Ekim 1923\n🎯 **İl Sayısı:** 81\n\n🕊️ BEYAZ KUŞ olarak Türkiye'nin her bilgisine sahibim!`;
+                }
+            }
+            
+            // Matematik soruları - EN ÖNCE SAYILARI KONTROL ET!
+            const numbers = message.match(/\d+/g);
+            console.log('Bulunan sayılar:', numbers);
+            
+            if (numbers && numbers.length >= 1) {
+                console.log('Matematik işlemi tespit edildi!');
+                
+                // Toplama işlemi
+                if (messageLower.includes('+') || messageLower.includes('topla') || messageLower.includes('artı')) {
+                    if (numbers.length >= 2) {
+                        const result = numbers.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+                        return `🧮 **Hesaplama Sonucu:**\n\n${numbers.join(' + ')} = ${result}\n\nMatematiksel kesinlikle hesaplandı!`;
+                    }
+                }
+                
+                // Çarpma işlemi
+                if (messageLower.includes('*') || messageLower.includes('x') || messageLower.includes('çarp') || messageLower.includes('çarpma')) {
+                    if (numbers.length >= 2) {
+                        const result = numbers.reduce((a, b) => parseInt(a) * parseInt(b), 1);
+                        return `🧮 **Çarpma Sonucu:**\n\n${numbers.join(' × ')} = ${result}\n\nMatematiksel kesinlikle hesaplandı!`;
+                    }
+                }
+                
+                // Bölme işlemi
+                if (messageLower.includes('/') || messageLower.includes('böl') || messageLower.includes('bölme')) {
+                    if (numbers.length >= 2) {
+                        const result = parseInt(numbers[0]) / parseInt(numbers[1]);
+                        return `🧮 **Bölme Sonucu:**\n\n${numbers[0]} ÷ ${numbers[1]} = ${result.toFixed(2)}\n\nMatematiksel kesinlikle hesaplandı!`;
+                    }
+                }
+                
+                // Çıkarma işlemi
+                if (messageLower.includes('-') || messageLower.includes('çıkar') || messageLower.includes('çıkarma')) {
+                    if (numbers.length >= 2) {
+                        const result = numbers.reduce((a, b) => parseInt(a) - parseInt(b));
+                        return `🧮 **Çıkarma Sonucu:**\n\n${numbers.join(' - ')} = ${result}\n\nMatematiksel kesinlikle hesaplandı!`;
+                    }
+                }
+                
+                // Karekök
+                if (messageLower.includes('karekök') || messageLower.includes('kök')) {
+                    const sqrt = Math.sqrt(parseInt(numbers[0]));
+                    return `🧮 **Karekök Hesabı:**\n\n√${numbers[0]} = ${sqrt.toFixed(4)}\n\nMatematiksel kesinlikle hesaplandı!`;
+                }
+                
+                // Kare
+                if (messageLower.includes('kare') && !messageLower.includes('karekök')) {
+                    const square = Math.pow(parseInt(numbers[0]), 2);
+                    return `🧮 **Kare Hesabı:**\n\n${numbers[0]}² = ${square}\n\nMatematiksel kesinlikle hesaplandı!`;
+                }
+                
+                // Faktöriyel
+                if (messageLower.includes('faktöriyel') || messageLower.includes('faktoriyel')) {
+                    const n = parseInt(numbers[0]);
+                    let factorial = 1;
+                    for (let i = 2; i <= n; i++) {
+                        factorial *= i;
+                    }
+                    return `🧮 **Faktöriyel Hesabı:**\n\n${n}! = ${factorial}\n\nMatematiksel kesinlikle hesaplandı!`;
+                }
+            }
+            
+            // Tarih soruları
+            if (persona && persona.name === "Tarih Ustası") {
+                if (messageLower.includes('ne zaman') || messageLower.includes('hangi yıl') || 
+                    messageLower.includes('tarihi')) {
+                    
+                    // Önemli tarih olayları
+                    const historicalEvents = {
+                        'türkiye cumhuriyet': '29 Ekim 1923',
+                        'osmanlı kuruluş': '1299',
+                        'istanbul fethi': '29 Mayıs 1453',
+                        'cumhuriyet ilan': '29 Ekim 1923',
+                        'kurtuluş savaşı': '1919-1922',
+                        'fransız ihtilali': '1789',
+                        '2. dünya savaşı': '1939-1945',
+                        '1. dünya savaşı': '1914-1918',
+                        'soğuk savaş': '1947-1991',
+                        'amerikan keşfi': '1492',
+                        'roma imparatorluğu': 'MÖ 27 - MS 476',
+                        'bizans imparatorluğu': '330 - 1453'
+                    };
+                    
+                    for (const [event, date] of Object.entries(historicalEvents)) {
+                        if (messageLower.includes(event)) {
+                            return `🏛️ **Tarihi Bilgi:**\n\n${event}: ${date}\n\nBu tarihi olay, dünya tarihinde önemli bir dönüm noktasıdır!`;
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        }
+        
+        // AI Yanıt Oluştur - Gelişmiş Persona Sistemi
+        function generateAIResponse(message) {
+            console.log('generateAIResponse çağrıldı, message:', message);
+            
+            const detectedLanguage = detectLanguage(message);
+            console.log('Dil tespiti:', detectedLanguage);
+            
+            // Persona seçimi
+            const persona = selectPersona(message);
+            console.log('Persona seçildi:', persona ? persona.name : 'Yok');
+            
+            // Zaman bilgisi
+            const timeInfo = getTimeInfo(message);
+            console.log('Zaman bilgisi:', timeInfo);
+            
+            // ÖNCE özel yanıt kontrolü ET - BU EN ÖNEMLİSİ!
+            const specialResponse = generateSpecialResponse(message, persona, detectedLanguage);
+            if (specialResponse) {
+                console.log('Özel yanıt döndü:', specialResponse);
+                return specialResponse;
+            }
+            
+            // Persona yanıtını oluştur
+            let response = '';
+            
+            if (persona) {
+                response = persona.response + '\n\n';
+                
+                // Persona'ya göre özel bilgi ekle
+                if (persona.name === "Matematik Dehası") {
+                    response += '🧮 **Matematiksel Yeteneklerim:**\n• Hesaplama: Toplama, çıkarma, çarpma, bölme\n• İleri düzey: Karekök, kare, faktöriyel\n• Formüller: Geometri, cebir, istatistik\n• Analiz: Limit, türev, integral\n\nSorularınızı matematiksel kesinlikle çözüyorum!';
+                } else if (persona.name === "Tarih Ustası") {
+                    response += '🏛️ **Tarihsel Bilgilerim:**\n• Türkiye Tarihi: Osmanlı, Cumhuriyet, Kurtuluş Savaşı\n• Dünya Tarihi: Medeniyetler, savaşlar, devletler\n• Kronoloji: Tarih olayları ve dönemler\n• Kültür: Sanat, edebiyat, mimari\n\nGeçmişin her dokusuna hakimim!';
+                } else if (persona.name === "Bilim Uzmanı") {
+                    response += '🔬 **Bilimsel Uzmanlık Alanlarım:**\n• Fizik: Klasik mekanik, kuantum, görelilik\n• Kimya: Elementler, bileşikler, reaksiyonlar\n• Biyoloji: Hücre, DNA, evrim, ekosistem\n• Astronomi: Gezegenler, yıldızlar, galaksiler\n\nEvrenin sırlarını bilimsel yöntemle çözüyorum!';
+                } else if (persona.name === "Sanat Ustası") {
+                    response += '🎨 **Sanatsal Bilgilerim:**\n• Görsel Sanat: Resim, heykel, mimari\n• Müzik: Bestecilik, enstrümanlar, müzik teorisi\n• Edebiyat: Şiir, roman, tiyatro, hikaye\n• Kültür: Sanat akımları, sanatçılar, eserler\n\nSanatın her dalında ruh sahibiyim!';
+                } else if (persona.name === "Teknoloji Guru") {
+                    response += '💻 **Teknolojik Uzmanlığım:**\n• Programlama: Python, JavaScript, C++, Java\n• Web: HTML, CSS, React, Node.js\n• AI: Makine öğrenmesi, derin öğrenme, NLP\n• Siber Güvenlik: Kriptografi, ağ güvenliği\n\nDijital dünyanın mimarıyım!';
+                } else if (persona.name === "Felsefe Dehası") {
+                    response += '🤔 **Felsefi Derinliğim:**\n• Metafizik: Varlık, zaman, mekan\n• Epistemoloji: Bilgi, doğruluk, kesinlik\n• Etik: Ahlak, değerler, ahlaki felsefe\n• Mantık: Akıl yürütme, çıkarım, argüman\n\nVarlığın derinliklerinde geziniyorum!';
+                } else if (persona.name === "Spor Uzmanı") {
+                    response += '⚽ **Spor Bilgilerim:**\n• Futbol: Taktikler, oyuncular, ligler\n• Basketbol: NBA, EuroLeague, oyuncu istatistikleri\n• Antrenman: Kondisyon, güç, esneklik\n• Beslenme: Sporcu beslenmesi, performans\n\nSpor biliminin her alanına hakimim!';
+                } else if (persona.name === "Coğrafya Uzmanı") {
+                    response += '🌍 **Coğrafi Bilgilerim:**\n• Ülkeler: Başkentler, nüfus, ekonomiler\n• Coğrafi şekiller: Dağlar, nehirler, okyanuslar\n• İklim: İklim tipleri, hava durumu\n• Kültürel coğrafya: Dil, din, göç\n\nDünyanın her köşesini haritada zihnimde taşıyorum!';
+                }
+            } else {
+                // Genel yanıt
+                response = `🤖 **🕊️ BEYAZ KUŞ YANITI:**\n\nBen 🕊️ BEYAZ KUŞ, Türkiye ve dünya uzmanı! Size nasıl yardımcı olabilirim?\n\n🇹🇷 **Türkiye Bilgisi:** 81 il, 7 bölge, 16.000+ yıllık tarih\n🌍 **Dünya Bilgisi:** 195 ülke, 7 kıta, 8 milyar+ nüfus\n🔒 **Bağımsızlık:** %100 özgür, hiçbir yere bağlı değilim\n\nSorularınızı bekliyorum! 🚀`;
+            }
+            
+            // Zaman bilgisi ekle
+            if (timeInfo && timeInfo.detected) {
+                response += `\n\n⏰ **Zaman Tespiti:** "${timeInfo.word}" kelimesini kullandınız. Şu an: ${timeInfo.currentTime}`;
+            }
+            
+            // Türkçe ve dünya bilgisi ekle
+            const enhancedResponse = addTurkeyWorldKnowledge(response, detectedLanguage);
+            
+            // Bağımsızlık mesajı ekle
+            const finalResponse = addIndependenceMessage(enhancedResponse, detectedLanguage);
+            
+            console.log('Son yanıt oluşturuldu:', finalResponse);
+            return finalResponse;
+        }
+        
+        // Mesaj gönder
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            console.log('Mesaj gönderiliyor:', message);
+            
+            // Kullanıcı mesajını ekle
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // AI yanıtını oluştur ve ekle
+            console.log('AI yanıtı oluşturuluyor...');
+            setTimeout(() => {
+                try {
+                    const aiResponse = generateAIResponse(message);
+                    console.log('AI yanıtı oluşturuldu:', aiResponse);
+                    addMessage(aiResponse, 'ai');
+                } catch (error) {
+                    console.error('AI yanıtı oluşturulurken hata:', error);
+                    addMessage('🤖 **Hata:** Bir sorun oluştu. Lütfen tekrar deneyin.', 'ai');
+                }
+            }, 300);
+        }
+        
+        // Hızlı mesaj
+        function quickMessage(message) {
+            document.getElementById('userInput').value = message;
+            sendMessage();
+        }
+        
+        // Load saved settings
+        document.addEventListener('DOMContentLoaded', function() {
+            const settings = ['speech', 'typo', 'time', 'dark', 'notif'];
+            settings.forEach(setting => {
+                const saved = localStorage.getItem(setting);
+                if (saved === 'true') {
+                    document.getElementById(setting + 'Toggle').classList.add('active');
+                }
+            });
+            
+            // Kayıtlı dili yükle
+            const savedLanguage = localStorage.getItem('selectedLanguage');
+            if (savedLanguage) {
+                document.getElementById('languageSelect').value = savedLanguage;
+                updateLanguageUI(savedLanguage);
+            }
+            
+            // Login kontrolü
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                showMainApp();
+            } else {
+                showLogin();
+            }
+        });
+        
+        // Google ile giriş
+        function handleGoogleSignIn() {
+            // Demo için direkt giriş yap
+            localStorage.setItem('isLoggedIn', 'true');
+            showMainApp();
+        }
+        
+        // Ana uygulamayı göster
+        function showMainApp() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        }
+        
+        // Login ekranını göster
+        function showLogin() {
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
